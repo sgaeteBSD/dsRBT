@@ -1,20 +1,8 @@
 #include "BTNode.h"
+#include "bst.h"
 #include <iostream>
 
 using namespace std;
-
-class bst {
-public:
-  bst();
-  ~bst();
-  void insert(BTNode* &root, int &data);
-  bool remove(BTNode* &root, int key);
-  BTNode* search(int key, bool self);
-  void print();
-private:
-  BTNode* root;
-  BTNode* trueSearch(BTNode* node, int key, bool self);
-};
 
 //constructor
 bst::bst() {
@@ -128,4 +116,8 @@ BTNode* bst::trueSearch(BTNode* root, int key, bool self) {
   else {
     return trueSearch(root->getRight(), key, self); //search right
   }
+}
+
+BTNode*& bst::getRoot() {
+  return root;
 }
