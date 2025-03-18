@@ -11,8 +11,8 @@ class BTNode {
   BTNode(int newData);
   ~BTNode();
 
-  BTNode* getLeft();
-  BTNode* getRight();
+  BTNode* &getLeft();
+  BTNode* &getRight();
   int getData();
 
   void setLeft(BTNode* leftNode);

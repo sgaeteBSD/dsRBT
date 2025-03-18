@@ -9,20 +9,25 @@ public:
   ~bst();
   void insert(BTNode* &root, int &data);
   bool remove(BTNode* &root, int key);
-  BTNode* search(int key);
+  BTNode* search(int key, bool self);
   void print();
 private:
   BTNode* root;
-  BTNode* trueSearch(BTNode* node, int key);
+  BTNode* trueSearch(BTNode* node, int key, bool self);
 };
 
 //constructor
+bst::bst() {
+  root = NULL;
+}
 //destructor
+bst::~bst() {
+  delete root;
+}
 
 void bst::insert(BTNode* &root, int &data) {
   if (!root) { //whenever the passed node is NULL, create it
-    BTNode* root = new BTNode;
-    root->setData(data);
+    BTNode* root = new BTNode(data);
     root->setLeft(NULL);
     root->setRight(NULL);
   }
@@ -38,11 +43,11 @@ bool bst::remove(BTNode* &root, int key) {
   if (!root) {
     return false; //doesn't exist or empty tree
   }
-  BTNode* parent = new BTNode;
+  BTNode* parent;
   parent = search(key, false); //grab parent
   int direction = 0;
   if (parent) {
-    BTNode* toRemove = new BTNode;
+    BTNode* toRemove;
     if (parent->getLeft()->getData() == key) {
       toRemove = parent->getLeft();
       direction = 1;
@@ -64,7 +69,7 @@ bool bst::remove(BTNode* &root, int key) {
     }
 
     //if one child, inherit
-    else if (toRemove->getLeft() != NULL && toRemove->getRight == NULL) {
+    else if (toRemove->getLeft() != NULL && toRemove->getRight() == NULL) {
       if (direction == 1) { //child will go to left
 	parent->setLeft(toRemove->getLeft());
 	delete toRemove;
@@ -74,7 +79,7 @@ bool bst::remove(BTNode* &root, int key) {
 	delete toRemove;
       }
     }
-    else if (toRemove->getLeft() == NULL && toRemove->getRight != NULL) {
+    else if (toRemove->getLeft() == NULL && toRemove->getRight() != NULL) {
       if (direction == 1) { //child will go to left
 	parent->setLeft(toRemove->getRight());
 	delete toRemove;
@@ -86,7 +91,7 @@ bool bst::remove(BTNode* &root, int key) {
     }
 
     else if (toRemove->getLeft() != NULL && toRemove->getRight() != NULL) {
-      BTNode* inorderLeaf = new BTNode;
+      BTNode* inorderLeaf;
       inorderLeaf = toRemove->getRight(); //go to right first
       while (inorderLeaf->getLeft() != NULL) {
 	inorderLeaf = inorderLeaf->getLeft(); //walk to inorder leaf
@@ -97,7 +102,9 @@ bool bst::remove(BTNode* &root, int key) {
       parent->setLeft(NULL); //clear that bottom leaf
       delete inorderLeaf;
     }
+    return true;
   }
+  return false;
 }
 
 BTNode* bst::search(int key, bool self) { //if true get self, if false get parent
@@ -116,9 +123,9 @@ BTNode* bst::trueSearch(BTNode* root, int key, bool self) {
   }
 
   if (key < root->getData()) {
-    return search(root->getLeft(), key); //search left
+    return trueSearch(root->getLeft(), key, self); //search left
   }
   else {
-    return search(root->getRight(), key); //search right
+    return trueSearch(root->getRight(), key, self); //search right
   }
 }

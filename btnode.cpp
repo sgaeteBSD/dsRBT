@@ -15,10 +15,10 @@ BTNode::~BTNode(){
   left = NULL;
   right = NULL;
 }
-BTNode* BTNode::getLeft() {
+BTNode*& BTNode::getLeft() {
   return left;
 }
-BTNode* BTNode::getRight() {
+BTNode*& BTNode::getRight() {
   return right;
 }
 int BTNode::getData() {
