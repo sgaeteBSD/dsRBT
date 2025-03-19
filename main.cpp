@@ -4,14 +4,20 @@
 
 using namespace std;
 
-void addFile(bst tree);
-void print();
+void addFile(bst &tree);
+void print(BTNode* current, int depth);
 void quitter(bool &input);
 
 int main() {
   bst tree;
   bool input = true;
   while (input == true) { //command selector
+
+    bool exist = false;
+    if (tree.getRoot() != NULL) {
+      exist = true;
+    }
+    
     cout << "Your commands are ADD_MANUAL, ADD_FILE, PRINT, REMOVE, and QUIT." << endl;
     cout << endl;
     cout << "Input a command." << endl;
@@ -20,21 +26,12 @@ int main() {
     cin >> command; 
     cin.ignore();
     
-    bool exist = false;
-    if (tree.getRoot()) {
-      exist = true;
-    }
     
     if (strcmp(command, "ADD_MANUAL") == 0) {
-      if (exist == true) {
 	int add = 0;
 	cout << "Number to add:" << endl;
 	cin >> add;
 	tree.insert(tree.getRoot(), add);
-      }
-      else {
-	cout << "Your tree is empty!" << endl;
-      }
     }
     else if (strcmp(command, "ADD_FILE") == 0) {
       addFile(tree);
@@ -54,7 +51,7 @@ int main() {
     }
     else if (strcmp(command, "PRINT") == 0) {
       if (exist == true) {
-	//print(tree);
+	print(tree.getRoot(), 0);
       }
       else {
 	cout << "Your tree is empty!" << endl;
@@ -80,7 +77,7 @@ int main() {
   }
 }
 
-void addFile(bst tree) {
+void addFile(bst &tree) {
   cout << "Please enter the full name of your file. (ex: 'bst-numbers.txt')" << endl;
   string fileName;
   int fileVal;
@@ -89,6 +86,7 @@ void addFile(bst tree) {
   fstream BstNumbers(fileName);
   while (BstNumbers >> fileVal) { //read from file, spaces separating
     tree.insert(tree.getRoot(), fileVal);
+    cout << fileVal << endl;
   }
   BstNumbers.close();
 
@@ -99,4 +97,17 @@ void addFile(bst tree) {
 void quitter(bool &input) { //quit
   cout << "Goodbye!" << endl;
   input = false;
+}
+
+void print(BTNode* current, int depth) {
+  if (current->getRight() != NULL) {
+    print(current->getRight(), depth + 1);
+  }
+  for (int a = 0; a < depth; a++) {
+    cout << "\t";
+  }
+  cout << current->getData() << endl;
+  if (current->getLeft() != NULL) {
+    print(current->getLeft(), depth + 1);
+  }
 }

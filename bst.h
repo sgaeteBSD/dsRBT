@@ -8,7 +8,7 @@ class bst {
 public:
   bst();
   ~bst();
-  void insert(BTNode* &root, int &data);
+  void insert(BTNode* &pass, int &data);
   bool remove(BTNode* &root, int key);
   BTNode* search(int key, bool self);
   BTNode* &getRoot();

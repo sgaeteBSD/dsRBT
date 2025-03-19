@@ -13,17 +13,20 @@ bst::~bst() {
   delete root;
 }
 
-void bst::insert(BTNode* &root, int &data) {
-  if (!root) { //whenever the passed node is NULL, create it
-    BTNode* root = new BTNode(data);
-    root->setLeft(NULL);
-    root->setRight(NULL);
+void bst::insert(BTNode* &pass, int &data) {
+  if (pass == NULL) { //whenever the passed node is NULL, create it
+    pass = new BTNode(data);
+    pass->setLeft(NULL);
+    pass->setRight(NULL);
+    if (!root) {
+      root = pass;
+    }
   }
-  else if (root->getData() > data) {
-    insert(root->getLeft(), data);
+  else if (pass->getData() > data) {
+    insert(pass->getLeft(), data);
   }
   else {
-    insert(root->getRight(), data);
+    insert(pass->getRight(), data);
   }
 }
 
@@ -47,11 +50,9 @@ bool bst::remove(BTNode* &root, int key) {
 
     if (toRemove->getLeft() == NULL && toRemove->getRight() == NULL) { //leaf removal
       if (direction == 1) {
-	delete toRemove;
 	parent->setLeft(NULL);
       }
       else {
-	delete toRemove;
 	parent->setRight(NULL);
       }
     }
@@ -79,17 +80,26 @@ bool bst::remove(BTNode* &root, int key) {
     }
 
     else if (toRemove->getLeft() != NULL && toRemove->getRight() != NULL) {
-      BTNode* inorderLeaf;
-      inorderLeaf = toRemove->getRight(); //go to right first
+      BTNode* inorderLeaf = toRemove->getRight(); //go to right first
+      BTNode* parent = toRemove; //start parent here
       while (inorderLeaf->getLeft() != NULL) {
+	parent = inorderLeaf;
 	inorderLeaf = inorderLeaf->getLeft(); //walk to inorder leaf
       }
-      parent = search(inorderLeaf->getData(), false); //get parent of leaf
       toRemove->setData(inorderLeaf->getData()); //replace toRemove's data with that of leaf
 
-      parent->setLeft(NULL); //clear that bottom leaf
+      if (parent == toRemove) {
+	parent->setRight(inorderLeaf->getRight());
+      }
+      else {
+	parent->setLeft(inorderLeaf->getRight());
+      }
       delete inorderLeaf;
     }
+    else {
+    root = NULL;
+    }
+    delete toRemove;
     return true;
   }
   return false;
@@ -106,8 +116,9 @@ BTNode* bst::trueSearch(BTNode* root, int key, bool self) {
   if (root->getData() == key && self == true) {
     return root; //return self
   }
-  else if (root->getLeft()->getData() == key || root->getRight()->getData() == key && self == false) {
-    return root; //return parent
+  else if (self == false) {
+    if (root->getLeft() && root->getLeft()->getData() == key) return root;
+    if (root->getRight() && root->getRight()->getData() == key) return root;
   }
 
   if (key < root->getData()) {
