@@ -1,3 +1,9 @@
+/*
+ * Santiago Gaete
+ * 3/21/25
+ * Data Structures - Binary Search Tree
+ */
+
 #include <fstream>
 #include "BTNode.h"
 #include "bst.h"
@@ -18,7 +24,7 @@ int main() {
       exist = true;
     }
     
-    cout << "Your commands are ADD_MANUAL, ADD_FILE, PRINT, REMOVE, and QUIT." << endl;
+    cout << "Your commands are ADD_MANUAL, ADD_FILE, PRINT, SEARCH, REMOVE, and QUIT." << endl;
     cout << endl;
     cout << "Input a command." << endl;
     char command[15] = ""; //make sure to fit chars + 1 terminating
