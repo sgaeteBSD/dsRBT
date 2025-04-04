@@ -13,6 +13,8 @@ public:
   Node* search(int key, bool self);
   Node* &getRoot();
   void print();
+
+  void rbTree(Node* &root, Node* newNode);
 private:
   Node* root;
   Node* trueSearch(Node* node, int key, bool self);

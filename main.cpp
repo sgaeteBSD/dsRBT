@@ -18,6 +18,9 @@ void quitter(bool &input);
 int main() {
   bst tree;
   bool input = true;
+
+  addFile(tree);
+  
   while (input == true) { //command selector
 
     bool exist = false;
@@ -85,15 +88,15 @@ int main() {
 }
 
 void addFile(bst &tree) {
-  cout << "Please enter the full name of your file. (ex: 'bst-numbers.txt')" << endl;
+  //cout << "Please enter the full name of your file. (ex: 'bst-numbers.txt')" << endl;
   string fileName;
   int fileVal;
-  cin >> fileName;
-  cin.ignore();
+  //cin >> fileName;
+  //cin.ignore();
+  fileName = "bst-numbers.txt";
   fstream BstNumbers(fileName);
   while (BstNumbers >> fileVal) { //read from file, spaces separating
     tree.insert(tree.getRoot(), fileVal);
-    cout << fileVal << endl;
   }
   BstNumbers.close();
 
@@ -113,13 +116,14 @@ void print(Node* current, int depth) {
   for (int a = 0; a < depth; a++) {
     cout << "\t";
   }
-    if (current->getColor() == RED) {
-        cout << "\033[31m" << current->getData() << "\033[0m" << endl;  // Red text
-    }
-    
-    else if (current->getColor() == BLACK) {
-        cout << "\033[34m" << current->getData() << "\033[0m" << endl;  // Blue text
-    }
+  
+  if (current->getColor() == RED) {
+    cout << "\033[31m" << current->getData() << "\033[0m" << endl;  //red text
+  }
+  else if (current->getColor() == BLACK) {
+    cout << "\033[34m" << current->getData() << "\033[0m" << endl;  //blue text
+  }
+  
   if (current->getLeft() != NULL) {
     print(current->getLeft(), depth + 1);
   }

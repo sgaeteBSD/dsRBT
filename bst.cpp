@@ -20,8 +20,11 @@ void bst::insert(Node* &pass, int &data) {
     pass->setRight(NULL);
     pass->setColor(RED);
     if (!root) {
+      pass->setColor(BLACK);
       root = pass;
-      root->setColor(BLACK);
+    }
+    else {
+      rbTree(root, pass);
     }
   }
   else if (pass->getData() > data) {
@@ -148,4 +151,34 @@ Node* bst::trueSearch(Node* root, int key, bool self) {
 
 Node*& bst::getRoot() {
   return root;
+}
+
+void bst::rbTree(Node* &root, Node* newNode) {
+  Node* parent = NULL;
+  Node* grandpa = NULL;
+
+  while (newNode != root && newNode->getColor() == RED && newNode->getParent()->getColor() == RED) { //no two reds
+    parent = newNode->getParent();
+    grandpa = parent->getParent();
+
+    if (parent == grandpa->getLeft()) {
+      Node* uncle = grandpa->getRight();
+      if (uncle != NULL && uncle->getColor() == RED) {
+	//case 3: parent and uncle are red
+	grandpa->setColor(RED);
+	parent->setColor(BLACK);
+	uncle->setColor(BLACK);
+        //recursively call on grandpa
+	//
+	//
+	//
+	//
+      }
+      else if (uncle != NULL && uncle->getColor() == BLACK) {
+	//case 4: uncle is black
+	//P:left and N:right or P:right and N:leftx
+	
+      }
+    }
+  }
 }
