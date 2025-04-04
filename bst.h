@@ -8,14 +8,14 @@ class bst {
 public:
   bst();
   ~bst();
-  void insert(BTNode* &pass, int &data);
-  bool remove(BTNode* &root, int key);
-  BTNode* search(int key, bool self);
-  BTNode* &getRoot();
+  void insert(Node* &pass, int &data);
+  bool remove(Node* &root, int key);
+  Node* search(int key, bool self);
+  Node* &getRoot();
   void print();
 private:
-  BTNode* root;
-  BTNode* trueSearch(BTNode* node, int key, bool self);
+  Node* root;
+  Node* trueSearch(Node* node, int key, bool self);
 };
 
 #endif

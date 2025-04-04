@@ -1,4 +1,4 @@
-#include "BTNode.h"
+#include "Node.h"
 #include "bst.h"
 #include <iostream>
 
@@ -13,9 +13,9 @@ bst::~bst() {
   delete root;
 }
 
-void bst::insert(BTNode* &pass, int &data) {
+void bst::insert(Node* &pass, int &data) {
   if (pass == NULL) { //whenever the passed node is NULL, create it
-    pass = new BTNode(data);
+    pass = new Node(data);
     pass->setLeft(NULL);
     pass->setRight(NULL);
     if (!root) {
@@ -30,14 +30,14 @@ void bst::insert(BTNode* &pass, int &data) {
   }
 }
 
-bool bst::remove(BTNode* &root, int key) {
+bool bst::remove(Node* &root, int key) {
   if (!root) {
     return false; //doesn't exist or empty tree
   }
-  BTNode* parent;
+  Node* parent;
   parent = search(key, false); //grab parent
   int direction = 0;
-  BTNode* toRemove;
+  Node* toRemove;
   if (root->getData() == key) {
     toRemove = root;
     parent = NULL; //root got no parents
@@ -101,8 +101,8 @@ bool bst::remove(BTNode* &root, int key) {
 
     //case 3: two children!
     else if (toRemove->getLeft() != NULL && toRemove->getRight() != NULL) {
-      BTNode* inorderLeaf = toRemove->getRight(); //go to right first
-      BTNode* parent = toRemove; //start parent here
+      Node* inorderLeaf = toRemove->getRight(); //go to right first
+      Node* parent = toRemove; //start parent here
       while (inorderLeaf->getLeft() != NULL) {
 	parent = inorderLeaf;
 	inorderLeaf = inorderLeaf->getLeft(); //walk to inorder leaf
@@ -120,11 +120,11 @@ bool bst::remove(BTNode* &root, int key) {
     return true;
   }
 
-BTNode* bst::search(int key, bool self) { //if true get self, if false get parent
+Node* bst::search(int key, bool self) { //if true get self, if false get parent
   return trueSearch(root, key, self);
 }
 
-BTNode* bst::trueSearch(BTNode* root, int key, bool self) {
+Node* bst::trueSearch(Node* root, int key, bool self) {
   if (!root) {
     return NULL; //doesn't exist or empty tree
   }
@@ -144,6 +144,6 @@ BTNode* bst::trueSearch(BTNode* root, int key, bool self) {
   }
 }
 
-BTNode*& bst::getRoot() {
+Node*& bst::getRoot() {
   return root;
 }

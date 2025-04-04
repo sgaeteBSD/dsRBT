@@ -5,13 +5,13 @@
  */
 
 #include <fstream>
-#include "BTNode.h"
+#include "Node.h"
 #include "bst.h"
 
 using namespace std;
 
 void addFile(bst &tree);
-void print(BTNode* current, int depth);
+void print(Node* current, int depth);
 void quitter(bool &input);
 
 int main() {
@@ -105,7 +105,7 @@ void quitter(bool &input) { //quit
   input = false;
 }
 
-void print(BTNode* current, int depth) {
+void print(Node* current, int depth) {
   if (current->getRight() != NULL) {
     print(current->getRight(), depth + 1);
   }
