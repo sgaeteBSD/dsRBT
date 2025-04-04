@@ -18,8 +18,10 @@ void bst::insert(Node* &pass, int &data) {
     pass = new Node(data);
     pass->setLeft(NULL);
     pass->setRight(NULL);
+    pass->setColor(RED);
     if (!root) {
       root = pass;
+      root->setColor(BLACK);
     }
   }
   else if (pass->getData() > data) {

@@ -1,12 +1,13 @@
 /*
  * Santiago Gaete
  * 3/21/25
- * Data Structures - Binary Search Tree
+ * Data Structures - Red Black Tree Insertion
  */
 
 #include <fstream>
 #include "Node.h"
 #include "bst.h"
+#include <stdio.h>
 
 using namespace std;
 
@@ -112,7 +113,13 @@ void print(Node* current, int depth) {
   for (int a = 0; a < depth; a++) {
     cout << "\t";
   }
-  cout << current->getData() << endl;
+    if (current->getColor() == RED) {
+        cout << "\033[31m" << current->getData() << "\033[0m" << endl;  // Red text
+    }
+    
+    else if (current->getColor() == BLACK) {
+        cout << "\033[34m" << current->getData() << "\033[0m" << endl;  // Blue text
+    }
   if (current->getLeft() != NULL) {
     print(current->getLeft(), depth + 1);
   }

@@ -33,3 +33,11 @@ void Node::setRight(Node* rightNode) {
 void Node::setData(int newData) {
   data = newData;
 }
+
+Color Node::getColor() {
+  return color;
+}
+
+void Node::setColor(Color newColor) {
+  color = newColor;
+}
