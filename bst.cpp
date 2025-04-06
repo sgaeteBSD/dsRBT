@@ -13,12 +13,13 @@ bst::~bst() {
   delete root;
 }
 
-void bst::insert(Node* &pass, int &data) {
+void bst::insert(Node* &pass, int &data, Node* parent) {
   if (pass == NULL) { //whenever the passed node is NULL, create it
     pass = new Node(data);
     pass->setLeft(NULL);
     pass->setRight(NULL);
     pass->setColor(RED);
+    pass->setParent(parent);
     if (!root) {
       pass->setColor(BLACK);
       root = pass;
@@ -28,10 +29,10 @@ void bst::insert(Node* &pass, int &data) {
     }
   }
   else if (pass->getData() > data) {
-    insert(pass->getLeft(), data);
+    insert(pass->getLeft(), data, pass);
   }
   else {
-    insert(pass->getRight(), data);
+    insert(pass->getRight(), data, pass);
   }
 }
 
@@ -153,32 +154,120 @@ Node*& bst::getRoot() {
   return root;
 }
 
+//RED BLACK TREE CODE BELOW
+
 void bst::rbTree(Node* &root, Node* newNode) {
   Node* parent = NULL;
   Node* grandpa = NULL;
 
+  if (newNode == root) { //case 1: insert at root
+    newNode->setColor(BLACK);
+    return;
+  }
+  
   while (newNode != root && newNode->getColor() == RED && newNode->getParent()->getColor() == RED) { //no two reds
     parent = newNode->getParent();
     grandpa = parent->getParent();
 
+    //LEFT SIDE CASES
     if (parent == grandpa->getLeft()) {
       Node* uncle = grandpa->getRight();
+
       if (uncle != NULL && uncle->getColor() == RED) {
-	//case 3: parent and uncle are red
+	//case: parent and uncle are red
 	grandpa->setColor(RED);
 	parent->setColor(BLACK);
 	uncle->setColor(BLACK);
-        //recursively call on grandpa
-	//
-	//
-	//
-	//
+        newNode = grandpa; //run again on grandpa
       }
-      else if (uncle != NULL && uncle->getColor() == BLACK) {
-	//case 4: uncle is black
-	//P:left and N:right or P:right and N:leftx
-	
+      else if (newNode == parent->getRight()) {
+	newNode = parent;
+	leftRotate(newNode);
+      }
+      else {
+	parent->setColor(BLACK);
+	grandpa->setColor(RED);
+	rightRotate(grandpa); //right rotate grandparent
       }
     }
+
+    //RIGHT SIDE CASES
+    if (parent == grandpa->getRight()) { //mirror
+      Node* uncle = grandpa->getLeft();
+
+      if (uncle != NULL && uncle->getColor() == RED) {
+        //case: parent and uncle are red
+        grandpa->setColor(RED);
+        parent->setColor(BLACK);
+        uncle->setColor(BLACK);
+        newNode = grandpa; //run again on grandpa
+      }
+      else if (newNode == parent->getLeft()) {
+        newNode = parent;
+        rightRotate(newNode);
+      }
+      else {
+        parent->setColor(BLACK);
+        grandpa->setColor(RED);
+        leftRotate(grandpa); //left rotate grandparent
+      }
+    }
+    
+    root->setColor(BLACK);
   }
 }
+
+void bst::leftRotate(Node* x) {
+  Node* y = x->getRight(); //y is x's right child
+
+  //swap y's left into x's right
+  x->setRight(y->getLeft());
+  if (y->getLeft() != NULL) {
+    y->getLeft()->setParent(x); //update parent
+  }
+
+  //now update y's parent
+  y->setParent(x->getParent());
+
+  if (x->getParent() == NULL) { //if x is root
+    root = y; //now y is root!
+  }
+  else if (x == x->getParent()->getLeft()) { //if x was left child
+    x->getParent()->setLeft(y);
+  }
+  else { //if x was right child
+    x->getParent()->setRight(y);
+  }
+
+  //put x on y's left
+  y->setLeft(x);
+  x->setParent(y);
+}
+
+void bst::rightRotate(Node* y) {
+  Node* x = y->getLeft(); //x is y's left child
+
+  //swap x's right into y's left
+  y->setLeft(x->getRight());
+  if (x->getRight() != NULL) {
+    x->getRight()->setParent(y); //update parent
+  }
+
+  //now update x's parent
+  x->setParent(y->getParent());
+
+  if (y->getParent() == NULL) { //if y is root
+    root = x; //now x is root!
+  }
+  else if (y == y->getParent()->getRight()) { //if y was right child
+    y->getParent()->setRight(x);
+  }
+  else { //if y was left child
+    y->getParent()->setLeft(x);
+  }
+
+  //put y on x's right
+  x->setRight(y);
+  y->setParent(x);
+}
+

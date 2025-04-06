@@ -9,6 +9,8 @@ Node::Node(int newData) {
   data = newData;
   left = NULL; // setting pointer to null
   right = NULL;
+  parent = NULL;
+  color = RED;
 }
 Node::~Node(){
   // destructor
@@ -34,10 +36,16 @@ void Node::setData(int newData) {
   data = newData;
 }
 
+
+Node*& Node::getParent() {
+  return parent;
+}
+void Node::setParent(Node* parentNode) {
+  parent = parentNode;
+}
 Color Node::getColor() {
   return color;
 }
-
 void Node::setColor(Color newColor) {
   color = newColor;
 }
