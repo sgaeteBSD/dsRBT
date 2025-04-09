@@ -37,50 +37,57 @@ void bst::insert(Node* &pass, int &data, Node* parent) {
 }
 
 bool bst::remove(Node* &root, int key) {
+  enum Direction { LEFT, RIGHT };
+  
   if (!root) {
     return false; //doesn't exist or empty tree
   }
   Node* parent;
-  parent = search(key, false); //grab parent
-  int direction = 0;
+  parent = search(key, false); //grab parent (old method from before RBT)
+  Direction direction;
   Node* toRemove;
-  if (root->getData() == key) {
+  if (root->getData() == key) { //ROOT CASE
     toRemove = root;
     parent = NULL; //root got no parents
   }
   else if (parent) {
-    if (parent->getLeft() && parent->getLeft()->getData() == key) {
+    if (parent->getLeft() && parent->getLeft()->getData() == key) { //left child
       toRemove = parent->getLeft();
-      direction = 1;
+      direction = LEFT;
     }
-    else if (parent->getRight() && parent->getRight()->getData() == key) {
+    else if (parent->getRight() && parent->getRight()->getData() == key) { //right child
       toRemove = parent->getRight();
-      direction = 2;
+      direction = RIGHT;
     }
   }
   else {
     return false;
   }
   //case 1: no children, leaf
-    if (toRemove->getLeft() == NULL && toRemove->getRight() == NULL) { //leaf removal
-      if (parent) {
-	if (direction == 1) {
-           parent->setLeft(NULL);
-        }
+  if (toRemove->getLeft() == NULL && toRemove->getRight() == NULL) {
+    if (toRemove->getColor() == RED || toRemove == root) { //red leaf and root removal
+      if (parent) { //red leaf
+	if (direction == LEFT) {
+	  parent->setLeft(NULL);
+	}
 	else {
-           parent->setRight(NULL);
-        }
+	  parent->setRight(NULL);
+	}
       }
-      else { //if root
+      else { //root
 	root = NULL;
       }
       delete toRemove;
     }
+    else if (toRemove->getColor() == BLACK && toRemove != root) { //black leaf
+      //requires rebalance!
+    }
+  }
 
     //case 2: if one child, inherit
     else if (toRemove->getLeft() != NULL && toRemove->getRight() == NULL) {
       if (parent) {
-	if (direction == 1) { //child will go to left
+	if (direction == LEFT) { //child will go to left
 	parent->setLeft(toRemove->getLeft());
 	}
 	else {
@@ -93,7 +100,7 @@ bool bst::remove(Node* &root, int key) {
     }
     else if (toRemove->getLeft() == NULL && toRemove->getRight() != NULL) {
       if (parent) {
-	if (direction == 1) { //child will go to left
+	if (direction == LEFT) { //child will go to left
 	parent->setLeft(toRemove->getRight());
 	}
 	else {
@@ -121,6 +128,8 @@ bool bst::remove(Node* &root, int key) {
       else {
 	parent->setLeft(inorderLeaf->getRight());
       }
+
+      //CASE
       delete inorderLeaf;
     }
     return true;
