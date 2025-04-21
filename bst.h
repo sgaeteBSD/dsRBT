@@ -17,6 +17,7 @@ public:
   void rbTree(Node* &root, Node* newNode);
   void leftRotate(Node* x);
   void rightRotate(Node* y);
+  void remFix(Node* n);
 private:
   Node* root;
   Node* trueSearch(Node* node, int key, bool self);

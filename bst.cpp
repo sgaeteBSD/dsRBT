@@ -80,7 +80,7 @@ bool bst::remove(Node* &root, int key) {
       delete toRemove;
     }
     else if (toRemove->getColor() == BLACK && toRemove != root) { //black leaf
-      //requires rebalance!
+      //requires rebalance! also double check
     }
   }
 
@@ -97,11 +97,12 @@ bool bst::remove(Node* &root, int key) {
 	root = toRemove->getLeft();
       }
       delete toRemove;
+      toRemove->getLeft()->setColor(BLACK);
     }
     else if (toRemove->getLeft() == NULL && toRemove->getRight() != NULL) {
       if (parent) {
 	if (direction == LEFT) { //child will go to left
-	parent->setLeft(toRemove->getRight());
+	  parent->setLeft(toRemove->getRight());
 	}
 	else {
 	  parent->setRight(toRemove->getRight());
@@ -110,6 +111,7 @@ bool bst::remove(Node* &root, int key) {
 	root = toRemove->getRight();
       }
       delete toRemove;
+      toRemove->getRight()->setColor(BLACK);
     }
 
     //case 3: two children!
@@ -127,6 +129,10 @@ bool bst::remove(Node* &root, int key) {
       }
       else {
 	parent->setLeft(inorderLeaf->getRight());
+      }
+
+      if (inorderLeaf->getColor() == BLACK) {
+	//rebalance, also double check
       }
 
       //CASE
@@ -202,13 +208,13 @@ void bst::rbTree(Node* &root, Node* newNode) {
 
     //RIGHT SIDE CASES
     if (parent == grandpa->getRight()) { //mirror
-      Node* uncle = grandpa->getLeft();
+      Node* unc = grandpa->getLeft();
 
-      if (uncle != NULL && uncle->getColor() == RED) {
+      if (unc != NULL && unc->getColor() == RED) {
         //case: parent and uncle are red
         grandpa->setColor(RED);
         parent->setColor(BLACK);
-        uncle->setColor(BLACK);
+        unc->setColor(BLACK);
         newNode = grandpa; //run again on grandpa
       }
       else if (newNode == parent->getLeft()) {
@@ -280,3 +286,86 @@ void bst::rightRotate(Node* y) {
   y->setParent(x);
 }
 
+void bst::remFix(Node* n) {
+  enum Direction { LEFT, RIGHT };
+  while (n != root) {
+    Node* p = n->getParent();
+    Node* s;
+    Node* c;
+    Node* d;
+    Direction nDir;
+
+    //case 1
+    if (!p) {
+      break;
+    }
+    
+    if (p->getRight() != NULL && p->getRight() == n) { // s = sibling, c = close nephew, d = distant nephew
+      s = p->getLeft();
+      c = s->getRight();
+      d = s->getLeft();
+      nDir = RIGHT;
+    } else if (p->getLeft() == n) {
+      s = p->getRight();
+      c = s->getLeft();
+      d = s->getRight();
+      nDir = LEFT;
+    }
+
+    if (s != NULL && s->getColor() == RED) {
+      //case 3
+      if (nDir == LEFT) {
+	leftRotate(p);
+	d = s->getRight();
+      } else {
+	rightRotate(p);
+	d = s->getLeft();
+      }
+      p->setColor(RED);
+      s->setColor(BLACK);
+      continue;
+    }
+      if (d != NULL && d->getColor() == RED) {
+	//case 6
+	if (nDir == RIGHT) {
+	  rightRotate(p);
+	} else {
+	  leftRotate(p);
+	}
+	s->setColor(p->getColor());
+	p->setColor(BLACK);
+	d->setColor(BLACK);
+	break;
+      }
+      
+      /*if (nDir == RIGHT) {
+	c = s->getRight();
+      } else {
+	c = s->getLeft();
+	}*/
+      if (c != NULL && c->getColor() == RED) {
+	//case 5
+	if (nDir == RIGHT) {
+	  leftRotate(s);
+	} else {
+	  rightRotate(s);
+	}
+	s->setColor(RED);
+	c->setColor(BLACK);
+	continue;
+      }
+      if (p->getColor() == RED) {
+      //case 4
+      s->setColor(RED);
+      p->setColor(BLACK);
+      break;
+      }
+
+    //case 2
+    if (s) {
+      s->setColor(RED);
+    }
+    n = p;
+  }
+  if (n) n->setColor(BLACK);
+}
