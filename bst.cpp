@@ -38,6 +38,7 @@ void bst::insert(Node* &pass, int &data, Node* parent) {
 
 bool bst::remove(Node* &root, int key) {
   enum Direction { LEFT, RIGHT };
+    Node* child;
   
   if (!root) {
     return false; //doesn't exist or empty tree
@@ -80,66 +81,76 @@ bool bst::remove(Node* &root, int key) {
       delete toRemove;
     }
     else if (toRemove->getColor() == BLACK && toRemove != root) { //black leaf
-      //requires rebalance! also double check
-    }
-  }
-
-    //case 2: if one child, inherit
-    else if (toRemove->getLeft() != NULL && toRemove->getRight() == NULL) {
-      if (parent) {
-	if (direction == LEFT) { //child will go to left
-	parent->setLeft(toRemove->getLeft());
-	}
-	else {
-	  parent->setRight(toRemove->getLeft());
-	}
-      } else {
-	root = toRemove->getLeft();
-      }
-      delete toRemove;
-      toRemove->getLeft()->setColor(BLACK);
-    }
-    else if (toRemove->getLeft() == NULL && toRemove->getRight() != NULL) {
-      if (parent) {
-	if (direction == LEFT) { //child will go to left
-	  parent->setLeft(toRemove->getRight());
-	}
-	else {
-	  parent->setRight(toRemove->getRight());
-	}
-      } else {
-	root = toRemove->getRight();
-      }
-      delete toRemove;
-      toRemove->getRight()->setColor(BLACK);
-    }
-
-    //case 3: two children!
-    else if (toRemove->getLeft() != NULL && toRemove->getRight() != NULL) {
-      Node* inorderLeaf = toRemove->getRight(); //go to right first
-      Node* parent = toRemove; //start parent here
-      while (inorderLeaf->getLeft() != NULL) {
-	parent = inorderLeaf;
-	inorderLeaf = inorderLeaf->getLeft(); //walk to inorder leaf
-      }
-      toRemove->setData(inorderLeaf->getData()); //replace toRemove's data with that of leaf
-
-      if (parent == toRemove) {
-	parent->setRight(inorderLeaf->getRight());
+      remFix(toRemove);//requires rebalance!
+      if (direction == LEFT) {
+	parent->setLeft(NULL);
       }
       else {
-	parent->setLeft(inorderLeaf->getRight());
+	parent->setRight(NULL);
       }
-
-      if (inorderLeaf->getColor() == BLACK) {
-	//rebalance, also double check
-      }
-
-      //CASE
-      delete inorderLeaf;
+      delete toRemove;
     }
-    return true;
   }
+
+  //case 2: if one child, inherit
+  else if ((toRemove->getLeft() != NULL && toRemove->getRight() == NULL) || (toRemove->getLeft() == NULL && toRemove->getRight() != NULL)) {
+  if (toRemove->getLeft() != NULL && toRemove->getRight() == NULL) { child = toRemove->getLeft(); }
+  if (toRemove->getLeft() == NULL && toRemove->getRight() != NULL) { child = toRemove->getRight(); }
+  if (toRemove->getColor() == BLACK) {
+    if (child && child->getColor() == RED) {
+	child->setColor(BLACK);
+      }
+      else {
+	remFix(toRemove);
+      }
+    }
+    if (parent) {
+      if (direction == LEFT) { //child will go to left
+	parent->setLeft(child);
+      }
+      else {
+	parent->setRight(child);
+      }
+    } else {
+      root = child;
+    }
+    if (child) { child->setParent(parent); }
+    delete toRemove;
+  }
+
+  //case 3: two children!
+  else if (toRemove->getLeft() != NULL && toRemove->getRight() != NULL) {
+    Node* inorderLeaf = toRemove->getRight(); //go to right first
+    Node* parent = toRemove; //start parent here
+    while (inorderLeaf->getLeft() != NULL) {
+      parent = inorderLeaf;
+      inorderLeaf = inorderLeaf->getLeft(); //walk to inorder leaf
+    }
+    toRemove->setData(inorderLeaf->getData()); //replace toRemove's data with that of leaf
+
+    child = inorderLeaf->getRight();
+    if (parent == toRemove) {
+      parent->setRight(child);
+    }
+    else {
+      parent->setLeft(child);
+    }
+
+    if (child) {
+      child->setParent(parent);
+    }
+    
+    if (inorderLeaf->getColor() == BLACK) {
+      if (child && child->getColor() == RED) {
+	child->setColor(BLACK);
+      } else {
+	remFix(inorderLeaf);
+      }
+    }
+    delete inorderLeaf;
+  }
+  return true;
+}
 
 Node* bst::search(int key, bool self) { //if true get self, if false get parent
   return trueSearch(root, key, self);
@@ -302,13 +313,13 @@ void bst::remFix(Node* n) {
     
     if (p->getRight() != NULL && p->getRight() == n) { // s = sibling, c = close nephew, d = distant nephew
       s = p->getLeft();
-      c = s->getRight();
-      d = s->getLeft();
+      if (s->getRight()) { c = s->getRight(); }
+      if (s->getLeft()) { d = s->getLeft(); }
       nDir = RIGHT;
     } else if (p->getLeft() == n) {
       s = p->getRight();
-      c = s->getLeft();
-      d = s->getRight();
+      if (s->getLeft()) { c = s->getLeft(); }
+      if (s->getRight()) { d = s->getRight(); }
       nDir = LEFT;
     }
 
