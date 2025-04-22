@@ -300,10 +300,11 @@ void bst::rightRotate(Node* y) {
 void bst::remFix(Node* n) {
   enum Direction { LEFT, RIGHT };
   while (n != root) {
-    Node* p = n->getParent();
-    Node* s;
-    Node* c;
-    Node* d;
+    Node* p;
+    if (n->getParent()) { p = n->getParent(); }
+    Node* s = NULL;
+    Node* c = NULL;
+    Node* d = NULL;
     Direction nDir;
 
     //case 1
@@ -312,12 +313,13 @@ void bst::remFix(Node* n) {
     }
     
     if (p->getRight() != NULL && p->getRight() == n) { // s = sibling, c = close nephew, d = distant nephew
-      s = p->getLeft();
+      if (p->getLeft()) { s = p->getLeft(); }
       if (s->getRight()) { c = s->getRight(); }
       if (s->getLeft()) { d = s->getLeft(); }
       nDir = RIGHT;
+      cout<<"test1" <<endl;
     } else if (p->getLeft() == n) {
-      s = p->getRight();
+      if (p->getRight()) { s = p->getRight(); }
       if (s->getLeft()) { c = s->getLeft(); }
       if (s->getRight()) { d = s->getRight(); }
       nDir = LEFT;
@@ -327,14 +329,14 @@ void bst::remFix(Node* n) {
       //case 3
       if (nDir == LEFT) {
 	leftRotate(p);
-	d = s->getRight();
+	if (s->getRight()) { d = s->getRight(); }
       } else {
 	rightRotate(p);
-	d = s->getLeft();
+	if (s->getLeft()) { d = s->getLeft(); }
       }
       p->setColor(RED);
-      s->setColor(BLACK);
-      continue;
+      if (s) { s->setColor(BLACK); }
+      continue; //case 3 connects to other cases
     }
       if (d != NULL && d->getColor() == RED) {
 	//case 6
@@ -365,18 +367,21 @@ void bst::remFix(Node* n) {
 	c->setColor(BLACK);
 	continue;
       }
-      if (p->getColor() == RED) {
-      //case 4
-      s->setColor(RED);
-      p->setColor(BLACK);
-      break;
+      if (((s) && s->getColor() == BLACK && p->getColor() == RED) &&
+	  ((!c) && (!d) || ((c) && (c->getColor() == BLACK) && (!d)) ||
+	   ((d) && (d->getColor() == BLACK) && (!c)) ||
+	   ((c) && (d) && (c->getColor() == BLACK) && (d->getColor() == BLACK)))) {
+	//case 4
+	s->setColor(RED);
+	p->setColor(BLACK);
+	break;
       }
-
+      cout << "here" << endl;
     //case 2
     if (s) {
       s->setColor(RED);
     }
     n = p;
   }
-  if (n) n->setColor(BLACK);
+  //if (n) { n->setColor(BLACK); }
 }

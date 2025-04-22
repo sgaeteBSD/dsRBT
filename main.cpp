@@ -19,7 +19,7 @@ int main() {
   bst tree;
   bool input = true;
 
-  //addFile(tree);
+  addFile(tree);
   cout << "BLACK nodes are represented by blue coloring. RED nodes are red." << endl;
   
   while (input == true) { //command selector
@@ -29,7 +29,7 @@ int main() {
       exist = true;
     }
     
-    cout << "Your commands are ADD_MANUAL, ADD_FILE, PRINT, SEARCH, REMOVE, and QUIT." << endl;
+    cout << "Your commands are ad: Add, fl: File, pr: Print, sr: Search, rm: Remove, and qt: Quit." << endl;
     cout << endl;
     cout << "Input a command." << endl;
     char command[15] = ""; //make sure to fit chars + 1 terminating
@@ -38,16 +38,16 @@ int main() {
     cin.ignore();
     
     
-    if (strcmp(command, "ADD_MANUAL") == 0) {
+    if (strcmp(command, "ad") == 0) {
 	int add = 0;
 	cout << "Number to add:" << endl;
 	cin >> add;
 	tree.insert(tree.getRoot(), add, NULL);
     }
-    else if (strcmp(command, "ADD_FILE") == 0) {
+    else if (strcmp(command, "fl") == 0) {
       addFile(tree);
     }
-    else if (strcmp(command, "SEARCH") == 0) {
+    else if (strcmp(command, "sr") == 0) {
       if (exist == true) {
 	int key = 0;
 	cout << "Number to search:" << endl;
@@ -60,7 +60,7 @@ int main() {
 	cout << "Your tree is empty!" << endl;
       }
     }
-    else if (strcmp(command, "PRINT") == 0) {
+    else if (strcmp(command, "pr") == 0) {
       if (exist == true) {
 	print(tree.getRoot(), 0);
       }
@@ -68,7 +68,7 @@ int main() {
 	cout << "Your tree is empty!" << endl;
       }
     }
-    else if (strcmp(command, "REMOVE") == 0) {
+    else if (strcmp(command, "rm") == 0) {
       if (exist == true) {
 	int key;
 	cout << "Number to remove:" << endl;
@@ -79,7 +79,7 @@ int main() {
 	cout << "Your tree is empty!" << endl;
       }
     }
-    else if (strcmp(command, "QUIT") == 0) {
+    else if (strcmp(command, "qt") == 0) {
       quitter(input);
     }
     else {
@@ -89,12 +89,12 @@ int main() {
 }
 
 void addFile(bst &tree) {
-  cout << "Please enter the full name of your file. (ex: 'bst-numbers.txt')" << endl;
+  //cout << "Please enter the full name of your file. (ex: 'bst-numbers.txt')" << endl;
   string fileName;
   int fileVal;
-  cin >> fileName;
+  //cin >> fileName;
   cin.ignore();
-  //fileName = "bst-numbers.txt";
+  fileName = "rbt-test.txt";
   fstream BstNumbers(fileName);
   while (BstNumbers >> fileVal) { //read from file, spaces separating
     tree.insert(tree.getRoot(), fileVal, NULL);
