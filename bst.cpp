@@ -120,29 +120,35 @@ bool bst::remove(Node* &root, int key) {
 
   //case 3: two children!
   else if (toRemove->getLeft() != NULL && toRemove->getRight() != NULL) {
-    Node* inorderLeaf = toRemove->getRight(); //go to right first
-    Node* parent = toRemove; //start parent here
-    while (inorderLeaf->getLeft() != NULL) {
-      parent = inorderLeaf;
-      inorderLeaf = inorderLeaf->getLeft(); //walk to inorder leaf
-    }
-    toRemove->setData(inorderLeaf->getData()); //replace toRemove's data with that of leaf
+    Node* leaf = toRemove->getRight();
+    Node* p = toRemove;
 
-    if (parent == toRemove && inorderLeaf->getRight()) {
-      parent->setRight(inorderLeaf->getRight());
+    while (leaf->getLeft() != NULL) {
+      p = leaf;
+      leaf = leaf->getLeft();
     }
-    else if (inorderLeaf->getRight()) {
-      parent->setLeft(inorderLeaf->getRight());
+
+    toRemove->setData(leaf->getData());
+    Node* c = leaf->getRight();
+    if (p == toRemove) {
+      p->setRight(c);
+    } else {
+      p->setLeft(c);
     }
+    if (c) { c->setParent(p); }
+    if ((!c) && toRemove->getLeft()) {
+      c = toRemove->getLeft();
+    }
+    delete leaf;
     
-    if (child->getParent()->getColor() == RED) {
-	child->setColor(RED);
-	parent->setColor(BLACK);
+    if (toRemove->getColor() == BLACK) {
+      if ((c) && (c != toRemove->getLeft())) { remFix(c); }
+      else { remFix(p); }
     }
-    delete inorderLeaf;
-  }
-  if (toRemove->getLeft() == NULL && toRemove->getRight() == NULL && toRemove->getColor() == BLACK) {
-    remFix(toRemove);
+    if (p->getColor() == RED && (c) && (c->getColor() == BLACK)) {
+      if (c) { c->setColor(RED); }
+      p->setColor(BLACK);
+    }
   }
   return true;
 }
@@ -375,7 +381,7 @@ void bst::remFix(Node* n) {
       
       cout << "here" << endl;
     //case 2
-    if (s) {
+      if ((s) && ((((c) && c->getColor() == BLACK) && (!d)) || (((d) && d->getColor() == BLACK && (!c))) || ((!c) && (!d))))  {
       s->setColor(RED);
     }
     n = p;
