@@ -128,26 +128,21 @@ bool bst::remove(Node* &root, int key) {
     }
     toRemove->setData(inorderLeaf->getData()); //replace toRemove's data with that of leaf
 
-    child = inorderLeaf->getRight();
-    if (parent == toRemove) {
-      parent->setRight(child);
+    if (parent == toRemove && inorderLeaf->getRight()) {
+      parent->setRight(inorderLeaf->getRight());
     }
-    else {
-      parent->setLeft(child);
-    }
-
-    if (child) {
-      child->setParent(parent);
+    else if (inorderLeaf->getRight()) {
+      parent->setLeft(inorderLeaf->getRight());
     }
     
-    if (inorderLeaf->getColor() == BLACK) {
-      if (child && child->getColor() == RED) {
-	child->setColor(BLACK);
-      } else {
-	remFix(inorderLeaf);
-      }
+    if (child->getParent()->getColor() == RED) {
+	child->setColor(RED);
+	parent->setColor(BLACK);
     }
     delete inorderLeaf;
+  }
+  if (toRemove->getLeft() == NULL && toRemove->getRight() == NULL && toRemove->getColor() == BLACK) {
+    remFix(toRemove);
   }
   return true;
 }
@@ -311,6 +306,16 @@ void bst::remFix(Node* n) {
     if (!p) {
       break;
     }
+
+    if (((s) && s->getColor() == BLACK && p->getColor() == RED) &&
+	  ((!c) && (!d) || ((c) && (c->getColor() == BLACK) && (!d)) ||
+	   ((d) && (d->getColor() == BLACK) && (!c)) ||
+	   ((c) && (d) && (c->getColor() == BLACK) && (d->getColor() == BLACK)))) {
+	//case 4
+	s->setColor(RED);
+	p->setColor(BLACK);
+	break;
+      }
     
     if (p->getRight() != NULL && p->getRight() == n) { // s = sibling, c = close nephew, d = distant nephew
       if (p->getLeft()) { s = p->getLeft(); }
@@ -367,15 +372,7 @@ void bst::remFix(Node* n) {
 	c->setColor(BLACK);
 	continue;
       }
-      if (((s) && s->getColor() == BLACK && p->getColor() == RED) &&
-	  ((!c) && (!d) || ((c) && (c->getColor() == BLACK) && (!d)) ||
-	   ((d) && (d->getColor() == BLACK) && (!c)) ||
-	   ((c) && (d) && (c->getColor() == BLACK) && (d->getColor() == BLACK)))) {
-	//case 4
-	s->setColor(RED);
-	p->setColor(BLACK);
-	break;
-      }
+      
       cout << "here" << endl;
     //case 2
     if (s) {
