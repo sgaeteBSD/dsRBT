@@ -122,6 +122,7 @@ bool bst::remove(Node* &root, int key) {
   else if (toRemove->getLeft() != NULL && toRemove->getRight() != NULL) {
     Node* leaf = toRemove->getRight();
     Node* p = toRemove;
+    Node* o = toRemove;
 
     while (leaf->getLeft() != NULL) {
       p = leaf;
@@ -139,16 +140,34 @@ bool bst::remove(Node* &root, int key) {
     if ((!c) && toRemove->getLeft()) {
       c = toRemove->getLeft();
     }
-    delete leaf;
+
+    if (leaf->getColor() == RED) {
+      delete leaf;
+      return true;
+    }
     
     if (toRemove->getColor() == BLACK) {
-      if ((c) && (c != toRemove->getLeft())) { remFix(c); }
-      else { remFix(p); }
+      if ((c) && (c->getColor() == RED)) {
+	if ((o->getLeft()->getColor() == BLACK && o->getRight()->getColor() == BLACK)) {
+	  //
+	} else {
+	  c->setColor(RED);
+	}
+      }
+      else {
+	if ((c) && (c != toRemove->getLeft())) {
+	  remFix(c);
+	}
+	else {
+	  remFix(p);
+	}
+      }
     }
     if (p->getColor() == RED && (c) && (c->getColor() == BLACK)) {
       if (c) { c->setColor(RED); }
       p->setColor(BLACK);
     }
+    delete leaf;
   }
   return true;
 }
