@@ -38,7 +38,7 @@ void bst::insert(Node* &pass, int &data, Node* parent) {
 
 bool bst::remove(Node* &root, int key) {
   enum Direction { LEFT, RIGHT };
-    Node* child;
+  Node* child;
   
   if (!root) {
     return false; //doesn't exist or empty tree
@@ -94,10 +94,10 @@ bool bst::remove(Node* &root, int key) {
 
   //case 2: if one child, inherit
   else if ((toRemove->getLeft() != NULL && toRemove->getRight() == NULL) || (toRemove->getLeft() == NULL && toRemove->getRight() != NULL)) {
-  if (toRemove->getLeft() != NULL && toRemove->getRight() == NULL) { child = toRemove->getLeft(); }
-  if (toRemove->getLeft() == NULL && toRemove->getRight() != NULL) { child = toRemove->getRight(); }
-  if (toRemove->getColor() == BLACK) {
-    if (child && child->getColor() == RED) {
+    if (toRemove->getLeft() != NULL && toRemove->getRight() == NULL) { child = toRemove->getLeft(); }
+    if (toRemove->getLeft() == NULL && toRemove->getRight() != NULL) { child = toRemove->getRight(); }
+    if (toRemove->getColor() == BLACK) {
+      if (child && child->getColor() == RED) {
 	child->setColor(BLACK);
       }
       else {
@@ -120,43 +120,47 @@ bool bst::remove(Node* &root, int key) {
 
   //case 3: two children!
   else if (toRemove->getLeft() != NULL && toRemove->getRight() != NULL) {
-    Node* leaf = toRemove->getRight();
-    Node* p = toRemove;
-    Node* o = toRemove;
+    Node* leaf = toRemove->getRight(); //inorder successor
+    Node* p = toRemove; //parent
+    Node* o = toRemove; //original as backup
 
-    while (leaf->getLeft() != NULL) {
+    while (leaf->getLeft() != NULL) { //go left for leaf
       p = leaf;
       leaf = leaf->getLeft();
     }
 
-    toRemove->setData(leaf->getData());
-    Node* c = leaf->getRight();
-    if (p == toRemove) {
+    toRemove->setData(leaf->getData()); //copy leaf data into toRemove node (and delete leaf later)
+    Node* c = leaf->getRight(); //get leaf's child if it has one
+    if (p == toRemove) { //if the direct right child was successor
       p->setRight(c);
     } else {
       p->setLeft(c);
     }
+
     if (c) { c->setParent(p); }
-    if ((!c) && toRemove->getLeft()) {
+    
+    if ((!c) && toRemove->getLeft()) { //CASE: if leaf was null but node had a left child
       c = toRemove->getLeft();
     }
 
-    if (leaf->getColor() == RED) {
+    if (leaf->getColor() == RED) { //easy remove if it's red
       delete leaf;
       return true;
     }
-    
+
+    //if removing black node
     if (toRemove->getColor() == BLACK) {
       if ((c) && (c->getColor() == RED)) {
         if (leaf->getColor() == BLACK && (c == leaf->getLeft() || c == leaf->getRight())) {
-	  c->setColor(BLACK);
+	  c->setColor(BLACK); //child now adopts that color
 	}
       }
       else {
 	if ((c) && (c != toRemove->getLeft())) {
-	  remFix(c);
+	  remFix(c); //fix with c
 	}
 	else if ((c) && (c->getColor() == BLACK) && ((c->getParent()->getRight() == NULL) || c->getParent()->getLeft() == NULL)) {
+	  //some special cases
 	  if ((c->getRight() && c->getRight()->getColor() == RED) || (c->getLeft() && c->getLeft()->getColor() == RED)) {
 	    if (c->getParent()->getLeft() == NULL) {
 	      leftRotate(p);
@@ -166,15 +170,16 @@ bool bst::remove(Node* &root, int key) {
 	      c->getLeft()->setColor(BLACK);
 	    }
 	  } else {
-	    c->setColor(RED);
+	    c->setColor(RED); //push up!
 	    remFix(p);
 	  }
 	}
-	else if (toRemove != root) { //here
+	else if (toRemove != root) {
 	  remFix(p);
 	}
       }
     }
+    //recolor if necessary
     if (toRemove != root && p->getColor() == RED && (c) && (c->getColor() == BLACK)) {
       if (c) { c->setColor(RED); }
       p->setColor(BLACK);
@@ -332,28 +337,20 @@ void bst::rightRotate(Node* y) {
 void bst::remFix(Node* n) {
   enum Direction { LEFT, RIGHT };
   while (n != root) {
+    //parent
     Node* p;
     if (n->getParent()) { p = n->getParent(); }
-    Node* s = NULL;
-    Node* c = NULL;
-    Node* d = NULL;
+    Node* s = NULL; //sibling
+    Node* c = NULL; //close nephew
+    Node* d = NULL; //distant nephew
     Direction nDir;
 
     //case 1
     if (!p) {
       break;
     }
-
-    if (((s) && s->getColor() == BLACK && p->getColor() == RED) &&
-	  ((!c) && (!d) || ((c) && (c->getColor() == BLACK) && (!d)) ||
-	   ((d) && (d->getColor() == BLACK) && (!c)) ||
-	   ((c) && (d) && (c->getColor() == BLACK) && (d->getColor() == BLACK)))) {
-	//case 4
-	s->setColor(RED);
-	p->setColor(BLACK);
-	break;
-      }
     
+    //figure out direction and assign sibling/nephs
     if (p->getRight() != NULL && p->getRight() == n) { // s = sibling, c = close nephew, d = distant nephew
       if (p->getLeft()) { s = p->getLeft(); }
       if (s->getRight()) { c = s->getRight(); }
@@ -368,7 +365,7 @@ void bst::remFix(Node* n) {
     }
 
     if (s != NULL && s->getColor() == RED) {
-      //case 3
+      //case 3: red sibling, make it black & rotate
       if (nDir == LEFT) {
 	leftRotate(p);
 	if (s->getRight()) { d = s->getRight(); }
@@ -380,43 +377,47 @@ void bst::remFix(Node* n) {
       if (s) { s->setColor(BLACK); }
       continue; //case 3 connects to other cases
     }
-      if (d != NULL && d->getColor() == RED) {
-	//case 6
-	if (nDir == RIGHT) {
-	  rightRotate(p);
-	} else {
-	  leftRotate(p);
-	}
-	s->setColor(p->getColor());
-	p->setColor(BLACK);
-	d->setColor(BLACK);
-	break;
-      }
-      
-      /*if (nDir == RIGHT) {
-	c = s->getRight();
+    if (d != NULL && d->getColor() == RED) {
+      //case 6: d is red
+      if (nDir == RIGHT) {
+	rightRotate(p);
       } else {
-	c = s->getLeft();
-	}*/
-      if (c != NULL && c->getColor() == RED) {
-	//case 5
-	if (nDir == RIGHT) {
-	  leftRotate(s);
-	} else {
-	  rightRotate(s);
-	}
-	s->setColor(RED);
-	c->setColor(BLACK);
-	continue;
+	leftRotate(p);
       }
+      s->setColor(p->getColor());
+      p->setColor(BLACK);
+      d->setColor(BLACK);
+      break;
+    }
+
+    if (c != NULL && c->getColor() == RED) {
+      //case 5: c is red
+      if (nDir == RIGHT) {
+	leftRotate(s);
+      } else {
+	rightRotate(s);
+      }
+      s->setColor(RED);
+      c->setColor(BLACK);
+      continue;
+    }
+
+    if (((s) && s->getColor() == BLACK && p->getColor() == RED) &&
+	((!c) && (!d) || ((c) && (c->getColor() == BLACK) && (!d)) ||
+	 ((d) && (d->getColor() == BLACK) && (!c)) ||
+	 ((c) && (d) && (c->getColor() == BLACK) && (d->getColor() == BLACK)))) {
+      //case 4: s is black, p is red, nephews are black (OR NULL!!!)
+      s->setColor(RED);
+      p->setColor(BLACK);
+      break;
+    }
       
-      cout << "here" << endl;
-    //case 2
-      if ((s) && ((((c) && c->getColor() == BLACK) && (!d)) || (((d) && d->getColor() == BLACK && (!c))) || ((!c) && (!d))
-		  || (((c) && c->getColor() == BLACK) && ((d) && (d->getColor() == BLACK))))) {
+    cout << "here" << endl;
+    //case 2: s is black, nephs are black/null
+    if ((s) && ((((c) && c->getColor() == BLACK) && (!d)) || (((d) && d->getColor() == BLACK && (!c))) || ((!c) && (!d))
+		|| (((c) && c->getColor() == BLACK) && ((d) && (d->getColor() == BLACK))))) {
       s->setColor(RED);
     }
-    n = p;
+    n = p; //move up
   }
-  //if (n) { n->setColor(BLACK); }
 }
