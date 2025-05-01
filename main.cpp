@@ -93,7 +93,7 @@ void addFile(bst &tree) {
   string fileName;
   int fileVal;
   //cin >> fileName;
-  cin.ignore();
+  //cin.ignore();
   fileName = "rbt-test.txt";
   fstream BstNumbers(fileName);
   while (BstNumbers >> fileVal) { //read from file, spaces separating

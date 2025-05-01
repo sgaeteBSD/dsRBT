@@ -158,7 +158,21 @@ bool bst::remove(Node* &root, int key) {
 	if ((c) && (c != toRemove->getLeft())) {
 	  remFix(c);
 	}
-	else {
+	else if ((c) && (c->getColor() == BLACK) && ((c->getParent()->getRight() == NULL) || c->getParent()->getLeft() == NULL)) {
+	  if ((c->getRight() && c->getRight()->getColor() == RED) || (c->getLeft() && c->getLeft()->getColor() == RED)) {
+	    if (c->getParent()->getLeft() == NULL) {
+	      leftRotate(p);
+	      c->getRight()->setColor(BLACK);
+	    } else if (c->getParent()->getRight() == NULL) {
+	      rightRotate(p);
+	      c->getLeft()->setColor(BLACK);
+	    }
+	  } else {
+	    c->setColor(RED);
+	    remFix(p);
+	  }
+	}
+	else if (toRemove != root) { //here
 	  remFix(p);
 	}
       }
@@ -400,7 +414,8 @@ void bst::remFix(Node* n) {
       
       cout << "here" << endl;
     //case 2
-      if ((s) && ((((c) && c->getColor() == BLACK) && (!d)) || (((d) && d->getColor() == BLACK && (!c))) || ((!c) && (!d))))  {
+      if ((s) && ((((c) && c->getColor() == BLACK) && (!d)) || (((d) && d->getColor() == BLACK && (!c))) || ((!c) && (!d))
+		  || (((c) && c->getColor() == BLACK) && ((d) && (d->getColor() == BLACK))))) {
       s->setColor(RED);
     }
     n = p;
