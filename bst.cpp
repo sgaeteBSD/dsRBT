@@ -174,7 +174,7 @@ bool bst::remove(Node* &root, int key) {
 	    remFix(p);
 	  }
 	}
-	else if (toRemove != root) {
+	else {
 	  remFix(p);
 	}
       }
