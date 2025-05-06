@@ -172,10 +172,12 @@ bool bst::remove(Node* &root, int key) {
 	  } else {
 	    c->setColor(RED); //push up!
 	    remFix(p);
+	    return true;
 	  }
 	}
 	else {
 	  remFix(leaf);
+	  return true;
 	}
       }
     }
@@ -185,6 +187,8 @@ bool bst::remove(Node* &root, int key) {
       p->setColor(BLACK);
     } else if (toRemove != root && p->getColor() == RED && (c) && (c->getColor() == RED)) {
       c->setColor(BLACK);
+    } else if ((!leaf->getRight()) && (!leaf->getLeft())) {
+      remFix(leaf);
     }
     delete leaf;
   }
