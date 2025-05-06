@@ -151,7 +151,7 @@ bool bst::remove(Node* &root, int key) {
     //if removing black node
     if (toRemove->getColor() == BLACK) {
       if ((c) && (c->getColor() == RED)) {
-        if (leaf->getColor() == BLACK && (c == leaf->getLeft() || c == leaf->getRight())) {
+        if ((leaf) && leaf->getColor() == BLACK && (c == leaf->getLeft() || c == leaf->getRight())) {
 	  c->setColor(BLACK); //child now adopts that color
 	}
       }
@@ -175,7 +175,7 @@ bool bst::remove(Node* &root, int key) {
 	  }
 	}
 	else {
-	  remFix(p);
+	  remFix(leaf);
 	}
       }
     }
@@ -183,6 +183,8 @@ bool bst::remove(Node* &root, int key) {
     if (toRemove != root && p->getColor() == RED && (c) && (c->getColor() == BLACK)) {
       if (c) { c->setColor(RED); }
       p->setColor(BLACK);
+    } else if (toRemove != root && p->getColor() == RED && (c) && (c->getColor() == RED)) {
+      c->setColor(BLACK);
     }
     delete leaf;
   }
@@ -351,13 +353,13 @@ void bst::remFix(Node* n) {
     }
     
     //figure out direction and assign sibling/nephs
-    if (p->getRight() != NULL && p->getRight() == n) { // s = sibling, c = close nephew, d = distant nephew
+    if (p->getRight() == n || ((p->getLeft()) && (p->getRight() == NULL))) { // s = sibling, c = close nephew, d = distant nephew
       if (p->getLeft()) { s = p->getLeft(); }
       if (s->getRight()) { c = s->getRight(); }
       if (s->getLeft()) { d = s->getLeft(); }
       nDir = RIGHT;
-      cout<<"test1" <<endl;
-    } else if (p->getLeft() == n) {
+      //cout<<"test1" <<endl;
+    } else if (p->getLeft() == n || ((p->getRight()) && (p->getLeft() == NULL))) {
       if (p->getRight()) { s = p->getRight(); }
       if (s->getLeft()) { c = s->getLeft(); }
       if (s->getRight()) { d = s->getRight(); }
@@ -412,7 +414,7 @@ void bst::remFix(Node* n) {
       break;
     }
       
-    cout << "here" << endl;
+    //cout << "here" << endl;
     //case 2: s is black, nephs are black/null
     if ((s) && ((((c) && c->getColor() == BLACK) && (!d)) || (((d) && d->getColor() == BLACK && (!c))) || ((!c) && (!d))
 		|| (((c) && c->getColor() == BLACK) && ((d) && (d->getColor() == BLACK))))) {
